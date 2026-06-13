@@ -1,0 +1,17 @@
+pyroscope.scrape "smtp_proxy_profile" {
+  targets = [
+    {"__address__" = "smtp-proxy:6060", "service_name" = "smtp-proxy"},
+  ]
+  forward_to = [pyroscope.write.local.receiver]
+  profiling_config {
+    profile.process_cpu { enabled = true }
+    profile.memory      { enabled = true }
+    profile.goroutine   { enabled = true }
+  }
+}
+
+pyroscope.write "local" {
+  endpoint {
+    url = "http://pyroscope:4040"
+  }
+}

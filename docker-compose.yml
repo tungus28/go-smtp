@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  smtp-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smtp-proxy-app
+    ports:
+      - "7070:7070"            # SMTP открыт для всех (или тоже можно закрыть, если это прокси)
+      - "127.0.0.1:6060:6060"  # pprof открыт ТОЛЬКО для вас локально
+    env_file:
+      - .env  # <--- ПРОВЕРЬТЕ НАЛИЧИЕ ЭТОЙ СТРОКИ
+    restart: unless-stopped
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    container_name: pyroscope-server
+    # Порт 4040 наружу можно вообще не открывать, так как alloy и grafana видят его внутри сети
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: grafana-alloy
+    volumes:
+      - ./alloy-config.alloy:/etc/alloy/config.alloy:ro
+    command: run --storage.path=/tmp/alloy-data /etc/alloy/config.alloy
+    depends_on:
+      - smtp-proxy
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana-server
+    ports:
+      - "3000:3000" # Открываем Grafana, чтобы зайти в неё через браузер
