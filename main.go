@@ -13,11 +13,6 @@ import (
 	gosmtp "github.com/emersion/go-smtp" 
 )
 
-/*const (
-	yandexSMTP = "smtp.yandex.ru:465"
-	yandexUser = "admin@devrating.org" // Замените на вашу почту
-	yandexPass = "wvfatoifopnswumy"   // Пароль приложения (не обычный пароль!)
-)*/
 
 // Вместо констант используем функцию, которая читает переменные окружения
 func getYandexCredentials() (string, string) {
